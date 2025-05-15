@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,7 +23,7 @@ func GetAllEmployees(c *gin.Context) {
 func CreateEmployee(c *gin.Context) {
 	var emp model.Employee
 	if err := c.ShouldBindJSON(&emp); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	id, err := repository.CreateEmployee(emp)
@@ -33,13 +34,27 @@ func CreateEmployee(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
+func GetEmployeeByID(c *gin.Context) {
+	id := c.Param("id")
+	// id, _ = strconv.Itoa(id)
+	fmt.Println(id)
+	employee, err := repository.GetEmployeeByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch employee"})
+		return
+	}
+	// fmt.Println(employee)
+	c.JSON(http.StatusOK, employee)
+}
+
 func UpdateEmployee(c *gin.Context) {
 	var emp model.Employee
 	if err := c.ShouldBindJSON(&emp); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	// id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("id"))
+	fmt.Println(id)
 	err := repository.UpdateEmployee(emp)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee"})

@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/yasirms/beginner_go/config"
 	"github.com/yasirms/beginner_go/model"
 )
@@ -25,7 +28,7 @@ func GetAllEmployees() ([]model.Employee, error) {
 
 func CreateEmployee(emp model.Employee) (int, error) {
 	var id int
-	err := config.DB.QueryRow("INSERT INTO employee (employee_id, name, father_name, email, address, phone_number, cnic_number, job_title, job_start_date, job_end_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id",
+	err := config.DB.QueryRow(`INSERT INTO employee (employee_id, name, father_name, email, address, phone_number, cnic_number, job_title, job_start_date, job_end_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
 		emp.EmployeeID,
 		emp.Name,
 		emp.FatherName,
@@ -37,6 +40,8 @@ func CreateEmployee(emp model.Employee) (int, error) {
 		emp.JobStartDate,
 		emp.JobEndDate).Scan(&id)
 	if err != nil {
+		fmt.Println(err.Error())
+		log.Println("Error inserting employee:", err)
 		return 0, err
 	}
 	return id, nil
@@ -63,7 +68,7 @@ func DeleteEmployee(id int) error {
 	return err
 }
 
-func GetEmployeeByID(id int) (model.Employee, error) {
+func GetEmployeeByID(id string) (model.Employee, error) {
 	var emp model.Employee
 	err := config.DB.QueryRow("SELECT * FROM employee WHERE id = $1", id).Scan(&emp.ID, &emp.EmployeeID, &emp.Name, &emp.FatherName, &emp.Email, &emp.Address, &emp.PhoneNumber, &emp.CNICNumber, &emp.JobTitle, &emp.JobStartDate, &emp.JobEndDate, &emp.CreatedAt, &emp.UpdatedAt)
 	if err != nil {
