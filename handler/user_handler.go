@@ -73,3 +73,17 @@ func DeleteEmployee(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Employee deleted successfully"})
 }
+
+func HandleLogin(c *gin.Context) {
+	var cred model.UserCredentials
+	if err := c.ShouldBindJSON(&cred); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+	emp, err := repository.ValidateLogin(cred.Email, cred.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to login"})
+		return
+	}
+	c.JSON(http.StatusOK, emp)
+}

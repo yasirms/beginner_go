@@ -6,6 +6,8 @@ type Employee struct {
 	Name         string `json:"name"`
 	FatherName   string `json:"father_name"`
 	Email        string `json:"email"`
+	Password     string `json:"password"`
+	Role		 string `json:"role"`
 	Address      string `json:"address"`
 	PhoneNumber  string `json:"phone_number"`
 	CNICNumber   string `json:"cnic_number"`
@@ -38,4 +40,9 @@ type EmployeeLeave struct {
 	LeaveReason string `json:"leave_reason"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
+}
+
+type UserCredentials struct {
+	Email    string `json:"email" binding:"required, email"`
+	Password string `json:"password" binding:"required"`
 }

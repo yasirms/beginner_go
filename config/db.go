@@ -6,6 +6,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/golang-migrate/migrate"
+	"github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -46,6 +49,11 @@ func InitDB() {
 	}
 
 	fmt.Println("Employees Table created successfully")
+
+	if err := runMigrations(DB); err != nil {
+		log.Fatalf("failed to run migrations: %v", err)
+	}
+	log.Println("Migrations completed successfully")
 }
 
 func db_string() string {
@@ -54,4 +62,25 @@ func db_string() string {
 		fmt.Println("Error loading .env file")
 	}
 	return os.Getenv("POSTGRES_DB")
+}
+
+
+
+func runMigrations(db *sql.DB) error{
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("failed to create driver: %w", err)	
+	}
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres",
+		driver,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create migration instance: %w", err)
+	}
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {	
+		return fmt.Errorf("up migrations failed: %w", err)
+	}
+	return nil
 }

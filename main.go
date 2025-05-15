@@ -15,6 +15,7 @@ func main() {
 	r.POST("/employees", handler.CreateEmployee)
 	r.PUT("/employees/:id", handler.UpdateEmployee)
 	r.DELETE("/employees/:id", handler.DeleteEmployee)
+	r.GET("/login", handler.HandleLogin)
 	r.Run("localhost:8090")
 
 }

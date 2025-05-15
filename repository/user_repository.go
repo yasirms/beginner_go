@@ -76,3 +76,12 @@ func GetEmployeeByID(id string) (model.Employee, error) {
 	}
 	return emp, nil
 }
+
+func ValidateLogin(email, password string) (model.Employee, error) {
+	var emp model.Employee
+	err := config.DB.QueryRow("SELECT * FROM employee WHERE email = $1 AND password = $2", email, password).Scan(&emp.ID, &emp.EmployeeID, &emp.Name, &emp.FatherName, &emp.Email, &emp.Address, &emp.PhoneNumber, &emp.CNICNumber, &emp.JobTitle, &emp.JobStartDate, &emp.JobEndDate, &emp.CreatedAt, &emp.UpdatedAt)
+	if err != nil {
+		return emp, err
+	}
+	return emp, nil
+}
